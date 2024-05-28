@@ -10,7 +10,7 @@ public class Main {
         ServerSocket server = null;
         Socket client;
 
-        int portnumber = 1234; // TODO ändra till lämplig
+        int portnumber = 3333;
         if (args. length >= 1){
             portnumber = Integer.parseInt(args[0]);
 
