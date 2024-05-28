@@ -1,17 +1,79 @@
-// Press Shift twice to open the Search Everywhere dialog and type `show whitespaces`,
-// then press Enter. You can now see whitespace characters in your code.
+import java.io.*;
+import java.net.ServerSocket;
+import java.net.Socket;
+
+
 public class Main {
     public static void main(String[] args) {
-        // Press Alt+Enter with your caret at the highlighted text to see how
-        // IntelliJ IDEA suggests fixing it.
-        System.out.print("Hello and welcome!");
+        ServerSocket server = null;
+        Socket client;
 
-        // Press Shift+F10 or click the green arrow button in the gutter to run the code.
-        for (int i = 1; i <= 5; i++) {
+        int portnumber = 1234; // TODO ändra till lämplig
+        if (args. length >= 1){
+            portnumber = Integer.parseInt(args[0]);
 
-            // Press Shift+F9 to start debugging your code. We have set one breakpoint
-            // for you, but you can always add more by pressing Ctrl+F8.
-            System.out.println("i = " + i);
         }
+        // Create Server side socket
+        try{
+            server = new ServerSocket(portnumber);
+
+        }
+        catch(IOException ie){
+            System.out.println("Cannot open socket. "+ie);
+            System.exit(1);
+        }
+        System.out.println("SerrverSocket is created "+server);
+
+        // Wait for data from client and reply
+        while(true){
+            try{
+                System.out.println("Waiting for connect request...");
+                client = server.accept();
+
+                System.out.println("Connect request is accepted...");
+                String clientHost = client.getInetAddress().getHostAddress();
+                int clientPort = client.getPort();
+                System.out.println("Client host = "+clientHost+" Client port = "+clientPort);
+
+                // Read data from client
+
+                InputStream clientIn = client.getInputStream();
+                BufferedReader br = new BufferedReader(new InputStreamReader(clientIn));
+
+                String msgFromClient = br.readLine();
+                System.out.println("Message recceived from client = "+ msgFromClient);
+
+                //Send Response
+
+                if(msgFromClient != null && !msgFromClient.equalsIgnoreCase("bye"))
+                {
+                    OutputStream clientOut = client.getOutputStream();
+                    PrintWriter pw = new PrintWriter(clientOut, true);
+                    String ansMsg = "Hello, " + msgFromClient;
+                    pw.println(ansMsg);
+
+                }
+
+                // Close sockets
+
+                if (msgFromClient != null && msgFromClient.equalsIgnoreCase("bye")){
+
+                    server.close();
+
+                    client.close();
+                    break;
+                }
+
+            }catch (IOException ie){
+                System.out.println("Error: "+ie);
+            }
+
+        }
+
+
     }
+
+
+
+
 }
